@@ -1,53 +1,49 @@
 /* 
-*   NatDevice OpenCV
-*   Copyright (c) 2022 NatML Inc. All Rights Reserved.
+*   VideoKit OpenCV Sample
+*   Copyright (c) 2023 NatML Inc. All Rights Reserved.
 */
 
 namespace NatML.Examples {
 
     using UnityEngine;
     using UnityEngine.UI;
-    using NatML.Devices;
-    using NatML.Devices.Outputs;
+    using NatML.VideoKit;
     using OpenCVForUnity.CoreModule;
     using OpenCVForUnity.ImgprocModule;
+    using OpenCVForUnity.UtilsModule;
     using OpenCVForUnity.UnityUtils;
 
     public class EdgeDetectionSample : MonoBehaviour {
+
+        [Header(@"Camera")]
+        public VideoKitCameraManager cameraManager;
 
         [Header(@"UI")]
         public RawImage rawImage;
         public AspectRatioFitter aspectFitter;
 
-        CameraDevice cameraDevice;
-        MatOutput matOutput;
-
+        Mat imageMatrix;
         Mat edgeMatrix;
         Texture2D edgeTexture;
 
-        async void Start () {
-            // Request camera permissions
-            var permissionStatus = await MediaDeviceQuery.RequestPermissions<CameraDevice>();
-            if (permissionStatus != PermissionStatus.Authorized) {
-                Debug.LogError(@"User did not grant camera permissions");
+        private void Start () {
+            // Check that camera manager has ML capability
+            if (!cameraManager.capabilities.HasFlag(VideoKitCameraManager.Capabilities.MachineLearning)) {
+                Debug.LogError(@"Camera manager must have machine learning capability enabled");
                 return;
             }
-            // Discover a camera device
-            var query = new MediaDeviceQuery(MediaDeviceCriteria.CameraDevice);
-            cameraDevice = query.current as CameraDevice;
-            // Start the preview // Here we create a matrix output that produces gray matrices
-            matOutput = new MatOutput() { format = Imgproc.COLOR_RGBA2GRAY };
-            cameraDevice.StartRunning(matOutput);
-            // Create edge matrix and texture
-            edgeMatrix = new Mat();
+            // Listen for camera frames
+            cameraManager.OnCameraFrame.AddListener(OnCameraFrame);
         }
 
-        void Update () {
-            // Check that the preview matrix is available
-            if (matOutput?.matrix == null)
-                return;
+        private void OnCameraFrame (CameraFrame frame) {
+            // Update frame matrix
+            Texture2D frameTexture = frame.texture as Texture2D;
+            imageMatrix ??= new Mat(frameTexture.height, frameTexture.width, CvType.CV_8UC4);
+            MatUtils.copyToMat(frameTexture.GetRawTextureData<byte>(), imageMatrix);
             // Perform Canny edge detection
-            Imgproc.Canny(matOutput.matrix, edgeMatrix, 100, 200);
+            edgeMatrix ??= new Mat();
+            Imgproc.Canny(imageMatrix, edgeMatrix, 100, 200);
             // Convert to texture
             edgeTexture = edgeTexture ? edgeTexture : new Texture2D(edgeMatrix.width(), edgeMatrix.height(), TextureFormat.RGBA32, false);
             Utils.matToTexture2D(edgeMatrix, edgeTexture, false);
@@ -56,6 +52,13 @@ namespace NatML.Examples {
             aspectFitter.aspectRatio = (float)edgeTexture.width / edgeTexture.height;
         }
 
-        void OnDisable () => matOutput?.Dispose();
+        private void OnDisable () {
+            // Stop listening for frames
+            cameraManager.OnCameraFrame.RemoveListener(OnCameraFrame);
+            // Release matrix and texture
+            Texture2D.Destroy(edgeTexture);
+            edgeMatrix?.Dispose();
+            imageMatrix?.Dispose();
+        }
     }
 }

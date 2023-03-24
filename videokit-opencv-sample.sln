@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EnoxSoftware.OpenCVForUnity", "EnoxSoftware.OpenCVForUnity.csproj", "{2d103819-5ed8-1244-f184-116534858f37}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp", "Assembly-CSharp.csproj", "{b3d830c0-1e7b-90bc-704f-07e99d3d6151}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EnoxSoftware.OpenCVForUnity.Editor", "EnoxSoftware.OpenCVForUnity.Editor.csproj", "{7fa1de98-97ac-40cd-4cec-62b59b21cbd7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2d103819-5ed8-1244-f184-116534858f37}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2d103819-5ed8-1244-f184-116534858f37}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{b3d830c0-1e7b-90bc-704f-07e99d3d6151}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{b3d830c0-1e7b-90bc-704f-07e99d3d6151}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7fa1de98-97ac-40cd-4cec-62b59b21cbd7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7fa1de98-97ac-40cd-4cec-62b59b21cbd7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
